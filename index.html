@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Learning Tracker</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 15px;
+      transition: 0.3s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    video {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: #00ffcc;
+      border-radius: 5px;
+      transition: width 0.3s;
+    }
+
+    .title {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+  </style>
+
+</head>
+<body>
+
+<h1>🎓 Smart Learning Dashboard</h1>
+
+<div class="container">
+
+  <div class="card">
+    <div class="title">📘 Video 1</div>
+    <video id="video1" controls>
+      <source src="video1.mp4" type="video/mp4">
+    </video>
+    <div class="progress-bar"><div id="p1" class="progress"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="title">📗 Video 2</div>
+    <video id="video2" controls>
+      <source src="video2.mp4" type="video/mp4">
+    </video>
+    <div class="progress-bar"><div id="p2" class="progress"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="title">📕 Video 3</div>
+    <video id="video3" controls>
+      <source src="video3.mp4" type="video/mp4">
+    </video>
+    <div class="progress-bar"><div id="p3" class="progress"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="title">📙 Video 4</div>
+    <video id="video4" controls>
+      <source src="video4.mp4" type="video/mp4">
+    </video>
+    <div class="progress-bar"><div id="p4" class="progress"></div></div>
+  </div>
+
+</div>
+
+<script>
+/* ===== SEGMENT ===== */
+!function(){var analytics=window.analytics=window.analytics||[];
+if(!analytics.initialize)if(analytics.invoked)console.error("Segment twice.");
+else{
+analytics.invoked=!0;
+analytics.methods=["track","page","identify"];
+analytics.factory=function(t){return function(){
+var e=Array.prototype.slice.call(arguments);
+e.unshift(t);
+analytics.push(e);
+return analytics}};
+for(var i=0;i<analytics.methods.length;i++){
+var key=analytics.methods[i];
+analytics[key]=analytics.factory(key)}
+analytics.load=function(key){
+var script=document.createElement("script");
+script.async=!0;
+script.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";
+var first=document.getElementsByTagName("script")[0];
+first.parentNode.insertBefore(script,first)};
+analytics.load("ycCfN0y7gBQ5AwrHd5sanaK1dr5VLuiY");
+analytics.page();
+}}();
+
+/* ===== USER ===== */
+analytics.identify("student_1", { name: "Test Student" });
+analytics.track("User Logged In");
+
+/* ===== TRACK FUNCTION ===== */
+function trackVideo(videoId, progressId, name) {
+  const video = document.getElementById(videoId);
+  const progress = document.getElementById(progressId);
+
+  let completed = false;
+  let t10=false, t40=false, t80=false;
+
+  video.addEventListener("play", () => {
+    analytics.track("Video Started", { video: name });
+  });
+
+  video.addEventListener("timeupdate", () => {
+    if (!video.duration) return;
+
+    let percent = (video.currentTime / video.duration) * 100;
+
+    // update progress bar
+    progress.style.width = percent + "%";
+
+    if (percent >= 10 && !t10) {
+      t10 = true;
+      analytics.track("Video Watched 10%", { video: name });
+    }
+
+    if (percent >= 40 && !t40) {
+      t40 = true;
+      analytics.track("Video Watched 40%", { video: name });
+    }
+
+    if (percent >= 80 && !t80) {
+      t80 = true;
+      analytics.track("Video Watched 80%", { video: name });
+    }
+  });
+
+  video.addEventListener("ended", () => {
+    completed = true;
+    analytics.track("Video Completed", { video: name });
+  });
+
+  window.addEventListener("beforeunload", () => {
+    if (!completed && video.duration) {
+      analytics.track("Video Dropped Off", {
+        video: name,
+        percent: (video.currentTime / video.duration) * 100
+      });
+    }
+  });
+}
+
+/* APPLY */
+trackVideo("video1", "p1", "Video 1");
+trackVideo("video2", "p2", "Video 2");
+trackVideo("video3", "p3", "Video 3");
+trackVideo("video4", "p4", "Video 4");
+
+</script>
+
+</body>
+</html>
