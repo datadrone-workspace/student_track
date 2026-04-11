@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Student Learning Tracker</title>
+  <title>Smart Learning Analytics</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: #0f172a;
       color: white;
     }
 
@@ -18,22 +21,16 @@
 
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
       padding: 20px;
     }
 
     .card {
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
+      background: #1e293b;
       padding: 15px;
-      transition: 0.3s;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    }
-
-    .card:hover {
-      transform: scale(1.05);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
 
     video {
@@ -43,102 +40,122 @@
 
     .progress-bar {
       height: 8px;
-      background: rgba(255,255,255,0.3);
-      border-radius: 5px;
+      background: #334155;
       margin-top: 10px;
+      border-radius: 5px;
     }
 
     .progress {
       height: 100%;
       width: 0%;
-      background: #00ffcc;
+      background: #22c55e;
       border-radius: 5px;
-      transition: width 0.3s;
     }
 
-    .title {
-      margin-bottom: 10px;
-      font-weight: bold;
+    canvas {
+      max-width: 700px;
+      margin: 20px auto;
+      display: block;
+      background: white;
+      border-radius: 10px;
+      padding: 10px;
     }
   </style>
-
 </head>
+
 <body>
 
-<h1>🎓 Smart Learning Dashboard</h1>
+<h1>📊 Video Completion Analytics</h1>
 
+<!-- CHART -->
+<canvas id="myChart"></canvas>
+
+<!-- VIDEOS -->
 <div class="container">
 
   <div class="card">
-    <div class="title">📘 Video 1</div>
-    <video id="video1" controls>
-      <source src="video1.mp4" type="video/mp4">
-    </video>
+    <h3>Video 1</h3>
+    <video id="video1" controls><source src="video1.mp4"></video>
     <div class="progress-bar"><div id="p1" class="progress"></div></div>
   </div>
 
   <div class="card">
-    <div class="title">📗 Video 2</div>
-    <video id="video2" controls>
-      <source src="video2.mp4" type="video/mp4">
-    </video>
+    <h3>Video 2</h3>
+    <video id="video2" controls><source src="video2.mp4"></video>
     <div class="progress-bar"><div id="p2" class="progress"></div></div>
   </div>
 
   <div class="card">
-    <div class="title">📕 Video 3</div>
-    <video id="video3" controls>
-      <source src="video3.mp4" type="video/mp4">
-    </video>
+    <h3>Video 3</h3>
+    <video id="video3" controls><source src="video3.mp4"></video>
     <div class="progress-bar"><div id="p3" class="progress"></div></div>
   </div>
 
   <div class="card">
-    <div class="title">📙 Video 4</div>
-    <video id="video4" controls>
-      <source src="video4.mp4" type="video/mp4">
-    </video>
+    <h3>Video 4</h3>
+    <video id="video4" controls><source src="video4.mp4"></video>
     <div class="progress-bar"><div id="p4" class="progress"></div></div>
   </div>
 
 </div>
 
+<!-- ✅ SEGMENT (OFFICIAL LONG SNIPPET) -->
 <script>
-/* ===== SEGMENT ===== */
-!function(){var analytics=window.analytics=window.analytics||[];
-if(!analytics.initialize)if(analytics.invoked)console.error("Segment twice.");
-else{
-analytics.invoked=!0;
-analytics.methods=["track","page","identify"];
-analytics.factory=function(t){return function(){
-var e=Array.prototype.slice.call(arguments);
-e.unshift(t);
-analytics.push(e);
-return analytics}};
-for(var i=0;i<analytics.methods.length;i++){
-var key=analytics.methods[i];
-analytics[key]=analytics.factory(key)}
-analytics.load=function(key){
-var script=document.createElement("script");
-script.async=!0;
-script.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";
-var first=document.getElementsByTagName("script")[0];
-first.parentNode.insertBefore(script,first)};
-analytics.load("ycCfN0y7gBQ5AwrHd5sanaK1dr5VLuiY");
+!function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","screen","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="YOUR_WRITE_KEY";
+analytics.SNIPPET_VERSION="5.2.0";
+analytics.load("bCIQ3VUibreTA3bCSBKXZNj5gRkUw1O6");
 analytics.page();
 }}();
+</script>
 
-/* ===== USER ===== */
-analytics.identify("student_1", { name: "Test Student" });
-analytics.track("User Logged In");
+<!-- TRACKING + CHART -->
+<script>
 
-/* ===== TRACK FUNCTION ===== */
+// USER
+analytics.identify("student_1");
+
+// CHART DATA
+let videoProgress = {
+  "Video 1": 0,
+  "Video 2": 0,
+  "Video 3": 0,
+  "Video 4": 0
+};
+
+let chart;
+
+// CREATE CHART
+function createChart() {
+  chart = new Chart(document.getElementById("myChart"), {
+    type: "bar",
+    data: {
+      labels: Object.keys(videoProgress),
+      datasets: [{
+        label: "Completion %",
+        data: Object.values(videoProgress)
+      }]
+    },
+    options: {
+      scales: {
+        y: { min: 0, max: 100 }
+      }
+    }
+  });
+}
+
+// UPDATE CHART
+function updateChart() {
+  chart.data.datasets[0].data = Object.values(videoProgress);
+  chart.update();
+}
+
+// TRACK VIDEO
 function trackVideo(videoId, progressId, name) {
   const video = document.getElementById(videoId);
   const progress = document.getElementById(progressId);
 
-  let completed = false;
   let t10=false, t40=false, t80=false;
+  let completed = false;
 
   video.addEventListener("play", () => {
     analytics.track("Video Started", { video: name });
@@ -149,8 +166,9 @@ function trackVideo(videoId, progressId, name) {
 
     let percent = (video.currentTime / video.duration) * 100;
 
-    // update progress bar
     progress.style.width = percent + "%";
+    videoProgress[name] = Math.round(percent);
+    updateChart();
 
     if (percent >= 10 && !t10) {
       t10 = true;
@@ -170,24 +188,38 @@ function trackVideo(videoId, progressId, name) {
 
   video.addEventListener("ended", () => {
     completed = true;
+    videoProgress[name] = 100;
     analytics.track("Video Completed", { video: name });
+    updateChart();
   });
 
-  window.addEventListener("beforeunload", () => {
-    if (!completed && video.duration) {
-      analytics.track("Video Dropped Off", {
-        video: name,
-        percent: (video.currentTime / video.duration) * 100
-      });
+  // 🔥 DROP-OFF USING VISIBILITY CHANGE (BEST)
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+
+      if (!video.duration) return;
+
+      let percent = (video.currentTime / video.duration) * 100;
+
+      if (!completed && percent > 0 && percent < 95) {
+        analytics.track("Video Dropped Off", {
+          video: name,
+          percent: Math.round(percent)
+        });
+      }
     }
   });
+
 }
 
-/* APPLY */
+// APPLY
 trackVideo("video1", "p1", "Video 1");
 trackVideo("video2", "p2", "Video 2");
 trackVideo("video3", "p3", "Video 3");
 trackVideo("video4", "p4", "Video 4");
+
+// INIT
+createChart();
 
 </script>
 
