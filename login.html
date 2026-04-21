@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #3b82f6, #9333ea);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    input, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+    }
+
+    button {
+      background: #22c55e;
+      border: none;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <p>No account? <a href="signup.html">Signup</a></p>
+</div>
+
+<script>
+
+
+    // Segment tracking
+    
+function login() {
+  let email = document.getElementById("email").value;
+  let password = document.getElementById("password").value;
+
+  let storedUser = JSON.parse(localStorage.getItem(email));
+
+  if (storedUser && storedUser.password === password) {
+
+    // Save current user
+    localStorage.setItem("currentUser", email);
+
+    // 🔥 IDENTIFY USER IN SEGMENT
+    if (window.analytics) {
+      analytics.identify(email, {
+        name: storedUser.name,
+        email: storedUser.email
+      });
+
+      // 🔥 TRACK LOGIN EVENT
+      analytics.track("User Logged In", {
+        email: storedUser.email
+      });
+    }
+
+    // Redirect to dashboard
+    window.location.href = "index.html";
+
+  } else {
+    alert("Invalid credentials");
+  }
+}
+
+</script>
+
+</body>
+</html>
