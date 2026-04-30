@@ -1,227 +1,1854 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Smart Learning Analytics</title>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduTrack — Smart Learning Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #04080f;
+      --surface: #080f1c;
+      --surface2: #0c1628;
+      --surface3: #101e33;
+      --border: #162440;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --gold: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --text: #dbeafe;
+      --text2: #94a3b8;
+      --muted: #3d5a80;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'Instrument Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f172a;
-      color: white;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      display: flex;
+      overflow: hidden;
+      height: 100vh;
     }
 
-    h1 {
-      text-align: center;
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-logo {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-mark {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .logo-sub {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      margin-top: 3px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* User pill in sidebar */
+    .user-pill {
+      margin: 16px;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+    }
+    .user-pill-name {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-pill-email {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-pill-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      position: absolute;
+      top: 14px; right: 14px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 8px 12px;
+      overflow-y: auto;
+    }
+    .nav-section-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 14px 8px 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text2);
+      transition: all 0.18s;
+      margin-bottom: 2px;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(0,212,255,0.08); color: var(--accent); border-color: rgba(0,212,255,0.15); }
+    .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .course-list { padding: 4px 12px; }
+    .course-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-bottom: 2px;
+      border: 1px solid transparent;
+    }
+    .course-item:hover { background: var(--surface2); }
+    .course-item.active { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.2); }
+    .course-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 11px; color: var(--muted); flex-shrink: 0;
+    }
+    .course-item.active .course-num { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+    .course-item-title { font-size: 12px; color: var(--text2); line-height: 1.3; flex: 1; }
+    .course-item.active .course-item-title { color: var(--text); }
+    .course-done { font-size: 10px; color: var(--success); flex-shrink: 0; }
+
+    .sidebar-bottom {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .logout-btn {
+      width: 100%;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: var(--danger); color: #f87171; }
+
+    /* ─── MAIN ─── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+      gap: 20px;
+    }
+    .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+    .topbar-greeting {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+    .topbar-greeting .greet-prefix { color: var(--text2); font-weight: 600; font-size: 16px; }
+    .topbar-greeting .greet-name {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .topbar-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+    .topbar-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+    }
+    .tab-btn {
+      padding: 7px 18px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .tab-btn.active { background: var(--surface3); color: var(--text); border: 1px solid var(--border); }
+
+    /* KPI strip — 3 tiles only (Time on Page removed) */
+    .kpi-strip {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .kpi-tile {
+      flex: 1;
+      padding: 14px 20px;
+      background: var(--surface);
+    }
+    .kpi-tile-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .kpi-tile-val { font-family: var(--font-head); font-size: 22px; font-weight: 800; letter-spacing: -1px; }
+    .kpi-tile-sub { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: var(--font-mono); }
+
+    .page-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* ─── VIEWS ─── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── HOME VIEW ── */
+    .home-hero {
+      background: linear-gradient(135deg, #050b16 0%, #0a1628 50%, #0e1a35 100%);
+      padding: 56px 48px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .home-hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .home-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: 200px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      max-width: 600px;
+    }
+    .hero-title .hl { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-desc { font-size: 16px; color: var(--text2); max-width: 540px; line-height: 1.7; margin-bottom: 32px; }
+    .hero-stats { display: flex; gap: 32px; }
+    .hero-stat-num { font-family: var(--font-head); font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+    .hero-stat-lbl { font-size: 12px; color: var(--text2); font-family: var(--font-mono); }
+
+    .company-section { padding: 48px; border-bottom: 1px solid var(--border); }
+    .section-eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-heading { font-family: var(--font-head); font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .section-body { font-size: 15px; color: var(--text2); line-height: 1.8; max-width: 680px; margin-bottom: 32px; }
+
+    .pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .pillar-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
       padding: 20px;
+      transition: border-color 0.2s;
+    }
+    .pillar-card:hover { border-color: var(--accent2); }
+    .pillar-icon { font-size: 24px; margin-bottom: 12px; }
+    .pillar-title { font-family: var(--font-head); font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .pillar-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+    .home-courses-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 48px; }
+    .home-course-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.22s;
+      position: relative;
+      overflow: hidden;
+    }
+    .home-course-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.22s;
+    }
+    .home-course-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .home-course-card:hover::before { opacity: 1; }
+    .hcc-num { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 10px; }
+    .hcc-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.3px; }
+    .hcc-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 16px; }
+    .hcc-meta { display: flex; gap: 16px; align-items: center; }
+    .hcc-badge { padding: 4px 10px; border-radius: 20px; font-family: var(--font-mono); font-size: 10px; border: 1px solid var(--border); color: var(--text2); }
+    .hcc-progress-bar { flex: 1; height: 3px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+    .hcc-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s; }
+    .hcc-pct { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+
+    /* ── COURSES VIEW ── */
+    .courses-view-layout { display: grid; grid-template-columns: 1fr 420px; height: 100%; overflow: hidden; }
+    .course-video-panel { padding: 32px; overflow-y: auto; border-right: 1px solid var(--border); }
+    .course-info-panel { padding: 28px; overflow-y: auto; background: var(--surface); }
+
+    .video-player-wrap {
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .video-player-wrap video { width: 100%; display: block; aspect-ratio: 16/9; }
+
+    .video-info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .video-name { font-family: var(--font-head); font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .video-badge { padding: 5px 12px; border-radius: 20px; font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--border); color: var(--text2); }
+    .video-badge.watching { border-color: var(--accent); color: var(--accent); }
+    .video-badge.completed { border-color: var(--success); color: var(--success); }
+
+    .video-progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .vpbar { flex: 1; height: 5px; background: var(--surface3); border-radius: 5px; overflow: hidden; }
+    .vpfill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 5px; transition: width 0.3s; }
+    .vppct { font-family: var(--font-mono); font-size: 11px; color: var(--muted); width: 36px; text-align: right; }
+
+    .video-meta-chips { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+    .meta-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; font-family: var(--font-mono); font-size: 10px; color: var(--text2);
+    }
+    .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+    .chip-dot.g { background: var(--success); }
+    .chip-dot.b { background: var(--accent); }
+
+    .quiz-cta-btn {
+      width: 100%; padding: 14px; border-radius: 12px;
+      border: 1px dashed var(--border); background: transparent;
+      color: var(--muted); font-family: var(--font-body); font-size: 14px;
+      font-weight: 500; cursor: not-allowed; transition: all 0.22s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .quiz-cta-btn.unlocked { border: 1px solid var(--gold); color: var(--gold); background: rgba(245,158,11,0.05); cursor: pointer; }
+    .quiz-cta-btn.unlocked:hover { background: rgba(245,158,11,0.12); transform: translateY(-1px); }
+    .quiz-cta-btn.passed { border: 1px solid var(--success); color: var(--success); background: rgba(16,185,129,0.05); cursor: default; }
+
+    .quiz-score-badge {
+      display: none; align-items: center; gap: 8px;
+      padding: 8px 14px; border-radius: 10px;
+      font-family: var(--font-mono); font-size: 11px;
+      border: 1px solid var(--border); color: var(--text2);
+      background: var(--surface2); margin-top: 10px;
+    }
+    .quiz-score-badge.pass { border-color: var(--success); color: var(--success); background: rgba(16,185,129,0.06); }
+    .quiz-score-badge.fail { border-color: var(--danger); color: #f87171; background: rgba(239,68,68,0.06); }
+
+    .course-panel-heading { font-family: var(--font-head); font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .course-panel-sub { font-size: 12px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 20px; }
+
+    .lesson-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .lesson-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 10px;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .lesson-item:hover { border-color: var(--accent2); }
+    .lesson-item.active { border-color: var(--accent); background: rgba(0,212,255,0.05); }
+    .lesson-item.done .lesson-num { background: rgba(16,185,129,0.15); color: var(--success); border-color: var(--success); }
+    .lesson-num {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: var(--surface3); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 11px; color: var(--muted); flex-shrink: 0;
+    }
+    .lesson-item.active .lesson-num { background: var(--accent); color: #000; border-color: var(--accent); }
+    .lesson-title { font-size: 13px; color: var(--text2); flex: 1; }
+    .lesson-item.active .lesson-title { color: var(--text); font-weight: 500; }
+    .lesson-status { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+
+    .panel-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .panel-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .panel-stat-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .panel-stat-value { font-family: var(--font-head); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+
+    /* ── PROFILE VIEW ── */
+    .profile-view-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 48px;
     }
 
-    .container {
+    .profile-hero-card {
+      background: linear-gradient(135deg, var(--surface2) 0%, var(--surface3) 100%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-hero-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .profile-avatar {
+      width: 80px; height: 80px;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-head);
+      font-size: 32px; font-weight: 800; color: #fff;
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .profile-hero-info { flex: 1; position: relative; z-index: 1; }
+    .profile-hero-name { font-family: var(--font-head); font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+    .profile-hero-email { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+    .profile-hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .profile-tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      border: 1px solid var(--border);
+    }
+    .tag-active { border-color: var(--success); color: var(--success); background: rgba(16,185,129,0.06); }
+    .tag-enrolled { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.06); }
+    .tag-goal { border-color: var(--accent2); color: #a78bfa; background: rgba(124,58,237,0.06); }
+
+    .profile-stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .profile-stat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .profile-stat-card:hover { border-color: var(--accent); }
+    .profile-stat-val { font-family: var(--font-head); font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
+    .profile-stat-lbl { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+    .profile-section-title {
+      font-family: var(--font-mono);
+      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 14px;
+    }
+
+    .profile-video-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      padding: 20px;
+      gap: 14px;
+      margin-bottom: 28px;
     }
+    .profile-video-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      transition: border-color 0.2s;
+    }
+    .profile-video-card:hover { border-color: var(--border); }
+    .pvc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .pvc-num { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+    .pvc-title { font-family: var(--font-head); font-size: 14px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.3px; }
+    .pvc-status {
+      font-family: var(--font-mono); font-size: 9px;
+      padding: 3px 8px; border-radius: 20px;
+      border: 1px solid var(--border); color: var(--muted);
+    }
+    .pvc-status.watching { border-color: var(--accent); color: var(--accent); }
+    .pvc-status.done { border-color: var(--success); color: var(--success); }
+    .pvc-prog-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .pvc-bar { flex: 1; height: 4px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+    .pvc-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.5s; }
+    .pvc-pct { font-family: var(--font-mono); font-size: 10px; color: var(--muted); width: 32px; text-align: right; }
+    .pvc-quiz-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 20px;
+      font-family: var(--font-mono); font-size: 10px;
+      border: 1px solid var(--border); color: var(--muted); background: var(--surface3);
+    }
+    .pvc-quiz-badge.pass { border-color: var(--success); color: var(--success); background: rgba(16,185,129,0.06); }
+    .pvc-quiz-badge.fail { border-color: var(--danger); color: #f87171; background: rgba(239,68,68,0.06); }
+    .pvc-quiz-badge.none { color: var(--muted); }
 
-    .card {
-      background: #1e293b;
-      padding: 15px;
+    .profile-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .profile-detail-field {
+      background: var(--surface2);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      padding: 14px 16px;
     }
+    .pdf-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .pdf-value { font-size: 14px; font-weight: 500; color: var(--text); }
 
-    video {
-      width: 100%;
-      border-radius: 10px;
+    /* ── QUIZ MODAL ── */
+    .quiz-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(4,8,15,0.88); z-index: 400;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(10px);
     }
+    .quiz-overlay.active { display: flex; }
+    .quiz-modal {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px;
+      width: 680px; max-width: 96vw; max-height: 92vh;
+      overflow-y: auto;
+      animation: modalPop 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    .quiz-modal::-webkit-scrollbar { width: 4px; }
+    .quiz-modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    @keyframes modalPop { from { opacity:0; transform: scale(0.94) translateY(20px); } to { opacity:1; transform: scale(1) translateY(0); } }
 
-    .progress-bar {
-      height: 8px;
-      background: #334155;
-      margin-top: 10px;
-      border-radius: 5px;
+    .quiz-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .quiz-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .quiz-sub { font-size: 12px; color: var(--muted); font-family: var(--font-mono); margin-top: 4px; }
+    .quiz-close {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text2); cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s; flex-shrink: 0;
     }
+    .quiz-close:hover { border-color: var(--danger); color: var(--danger); }
 
-    .progress {
-      height: 100%;
-      width: 0%;
-      background: #22c55e;
-      border-radius: 5px;
-    }
+    .quiz-prog-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .quiz-prog-bar { flex: 1; height: 4px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+    .quiz-prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.4s; }
+    .quiz-prog-label { font-size: 11px; font-family: var(--font-mono); color: var(--muted); flex-shrink: 0; }
 
-    canvas {
-      max-width: 700px;
-      margin: 20px auto;
-      display: block;
-      background: white;
-      border-radius: 10px;
-      padding: 10px;
+    .q-num { font-size: 10px; font-family: var(--font-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .q-text { font-family: var(--font-head); font-size: 17px; font-weight: 600; line-height: 1.5; margin-bottom: 18px; }
+
+    .opt {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px; border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 10px; cursor: pointer;
+      background: var(--surface3); transition: all 0.18s; user-select: none;
     }
+    .opt:hover { border-color: var(--accent); background: rgba(0,212,255,0.05); }
+    .opt.selected { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+    .opt.correct { border-color: var(--success); background: rgba(16,185,129,0.09); pointer-events: none; }
+    .opt.wrong { border-color: var(--danger); background: rgba(239,68,68,0.09); pointer-events: none; }
+    .opt.reveal { border-color: var(--success); background: rgba(16,185,129,0.04); pointer-events: none; }
+
+    .opt-letter {
+      width: 28px; height: 28px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-family: var(--font-mono); font-weight: 600;
+      flex-shrink: 0; transition: all 0.18s;
+    }
+    .opt.selected .opt-letter { background: var(--accent); border-color: var(--accent); color: #000; }
+    .opt.correct .opt-letter { background: var(--success); border-color: var(--success); color: #000; }
+    .opt.wrong .opt-letter { background: var(--danger); border-color: var(--danger); color: #fff; }
+    .opt.reveal .opt-letter { background: rgba(16,185,129,0.15); border-color: var(--success); color: var(--success); }
+    .opt-text { font-size: 14px; line-height: 1.4; }
+
+    .q-feedback {
+      display: none; padding: 10px 14px; border-radius: 8px;
+      font-size: 13px; font-family: var(--font-mono);
+      margin-top: 2px; margin-bottom: 16px;
+    }
+    .q-feedback.show { display: block; }
+    .q-feedback.ok { background: rgba(16,185,129,0.07); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
+    .q-feedback.err { background: rgba(239,68,68,0.07); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+
+    .quiz-nav { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+    .qbtn {
+      padding: 11px 26px; border-radius: 8px;
+      font-family: var(--font-body); font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.18s; border: none;
+    }
+    .qbtn.sec { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+    .qbtn.sec:hover { border-color: var(--text); color: var(--text); }
+    .qbtn.pri { background: var(--accent2); color: #fff; }
+    .qbtn.pri:hover { opacity: 0.88; }
+    .qbtn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Results */
+    .results-screen { display: none; text-align: center; }
+    .results-screen.active { display: block; }
+    .res-circle {
+      width: 128px; height: 128px; border-radius: 50%;
+      margin: 0 auto 24px; display: flex;
+      align-items: center; justify-content: center;
+      flex-direction: column; position: relative;
+    }
+    .res-circle svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+    .res-inner { position: relative; z-index: 1; }
+    .res-num { font-family: var(--font-head); font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+    .res-lbl { font-size: 10px; font-family: var(--font-mono); color: var(--muted); }
+    .res-grade { font-family: var(--font-head); font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .res-msg { font-size: 14px; color: var(--text2); margin-bottom: 28px; line-height: 1.6; }
+    .res-breakdown { background: var(--surface3); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: left; margin-bottom: 20px; }
+    .res-bd-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-family: var(--font-mono); margin-bottom: 12px; }
+    .res-bd-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .res-bd-row:last-child { border-bottom: none; }
+    .res-bd-q { flex: 1; margin-right: 12px; color: var(--text2); }
+    .res-bd-ans { font-family: var(--font-mono); font-size: 12px; flex-shrink: 0; }
+    .res-bd-ans.c { color: var(--success); }
+    .res-bd-ans.w { color: var(--danger); }
+
+    /* Activation banner */
+    .activation-banner {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 12px 18px; margin-bottom: 28px; font-size: 13px;
+    }
+    .act-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 8px var(--danger); flex-shrink: 0; transition: all 0.5s; }
+    .act-dot.partial { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+    .act-dot.full { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .act-label { color: var(--text2); }
+    .act-label strong { color: var(--text); }
+    .act-steps { display: flex; gap: 6px; margin-left: auto; }
+    .act-step { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-family: var(--font-mono); border: 1px solid var(--border); color: var(--muted); transition: all 0.3s; }
+    .act-step.done { border-color: var(--success); color: var(--success); background: rgba(16,185,129,0.06); }
+    .act-step.warn { border-color: var(--gold); color: var(--gold); background: rgba(245,158,11,0.06); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
   </style>
 </head>
-
 <body>
 
-<h1>📊 Video Completion Analytics</h1>
-
-<!-- CHART -->
-<canvas id="myChart"></canvas>
-
-<!-- VIDEOS -->
-<div class="container">
-
-  <div class="card">
-    <h3>Video 1</h3>
-    <video id="video1" controls><source src="video1.mp4"></video>
-    <div class="progress-bar"><div id="p1" class="progress"></div></div>
+<!-- ═══ SIDEBAR ═══ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">⬡ EduTrack</div>
+    <div class="logo-sub">Smart Learning Platform</div>
   </div>
 
-  <div class="card">
-    <h3>Video 2</h3>
-    <video id="video2" controls><source src="video2.mp4"></video>
-    <div class="progress-bar"><div id="p2" class="progress"></div></div>
+  <div class="user-pill">
+    <div class="user-pill-dot"></div>
+    <div class="user-pill-name" id="pillName">—</div>
+    <div class="user-pill-email" id="pillEmail">—</div>
   </div>
 
-  <div class="card">
-    <h3>Video 3</h3>
-    <video id="video3" controls><source src="video3.mp4"></video>
-    <div class="progress-bar"><div id="p3" class="progress"></div></div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Navigation</div>
+    <div class="nav-item active" id="nav-home" onclick="showView('home')">
+      <span class="nav-icon">⊞</span> Dashboard
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="showView('profile')">
+      <span class="nav-icon">◉</span> My Profile
+    </div>
+
+    <div class="nav-section-label">Courses</div>
+    <div class="course-list">
+      <div class="course-item active" id="sc-1" onclick="openCourse(1)">
+        <div class="course-num">1</div>
+        <div class="course-item-title">Introduction</div>
+        <div class="course-done" id="scDone1"></div>
+      </div>
+      <div class="course-item" id="sc-2" onclick="openCourse(2)">
+        <div class="course-num">2</div>
+        <div class="course-item-title">Core Concepts</div>
+        <div class="course-done" id="scDone2"></div>
+      </div>
+      <div class="course-item" id="sc-3" onclick="openCourse(3)">
+        <div class="course-num">3</div>
+        <div class="course-item-title">Deep Dive</div>
+        <div class="course-done" id="scDone3"></div>
+      </div>
+      <div class="course-item" id="sc-4" onclick="openCourse(4)">
+        <div class="course-num">4</div>
+        <div class="course-item-title">Advanced Topics</div>
+        <div class="course-done" id="scDone4"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>Video 4</h3>
-    <video id="video4" controls><source src="video4.mp4"></video>
-    <div class="progress-bar"><div id="p4" class="progress"></div></div>
+  <div class="sidebar-bottom">
+    <button class="logout-btn" onclick="logout()">⏏ Sign Out</button>
   </div>
-
 </div>
 
-<!-- ✅ SEGMENT (OFFICIAL LONG SNIPPET) -->
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-greeting">
+        <span class="greet-prefix">Hello, </span><span class="greet-name" id="greetName">—</span>
+      </div>
+      <div class="topbar-sub" id="topbarSub">Welcome back to your learning dashboard</div>
+    </div>
+    <div class="topbar-tabs">
+      <button class="tab-btn active" id="tab-home" onclick="showView('home')">Overview</button>
+      <button class="tab-btn" id="tab-courses" onclick="showView('courses')">Courses</button>
+      <button class="tab-btn" id="tab-profile" onclick="showView('profile')">My Profile</button>
+    </div>
+  </div>
+
+  <!-- KPI Strip — 3 tiles (Time on Page removed) -->
+  <div class="kpi-strip">
+    <div class="kpi-tile">
+      <div class="kpi-tile-label">Videos Started</div>
+      <div class="kpi-tile-val" id="kpiStarted">0</div>
+      <div class="kpi-tile-sub">of 4 total</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-tile-label">Avg Completion</div>
+      <div class="kpi-tile-val" id="kpiAvg">0%</div>
+      <div class="kpi-tile-sub">across all videos</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-tile-label">Quiz Score</div>
+      <div class="kpi-tile-val" id="kpiQuizScore">—</div>
+      <div class="kpi-tile-sub">latest attempt</div>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+
+    <!-- ── HOME VIEW ── -->
+    <div class="view active" id="view-home">
+      <div class="home-hero">
+        <div class="hero-badge">Live Learning Platform</div>
+        <div class="hero-title">Master <span class="hl">Twilio</span> APIs<br>with Expert-Led Videos</div>
+        <div class="hero-desc">EduTrack provides structured video courses on Twilio products — Voice, Flex, SendGrid, and Video — with real-time analytics, quizzes, and progress tracking to keep learners engaged.</div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num">4</div><div class="hero-stat-lbl">Video Lessons</div></div>
+          <div><div class="hero-stat-num">20</div><div class="hero-stat-lbl">Quiz Questions</div></div>
+          <div><div class="hero-stat-num">60%</div><div class="hero-stat-lbl">Pass Threshold</div></div>
+        </div>
+      </div>
+
+      <div class="company-section">
+        <div class="section-eyebrow">About EduTrack</div>
+        <div class="section-heading">Built for developers who learn by doing</div>
+        <div class="section-body">EduTrack is an enterprise learning platform designed to help teams rapidly upskill on modern communication APIs. We combine hands-on video learning with adaptive assessments to measure real comprehension — not just completion. Every interaction is tracked so you know exactly where learners succeed and where they need support.</div>
+        <div class="pillars-grid">
+          <div class="pillar-card">
+            <div class="pillar-icon">▶</div>
+            <div class="pillar-title">Video-First Learning</div>
+            <div class="pillar-desc">Expert-produced video content with milestone tracking at 10%, 40%, and 80% completion.</div>
+          </div>
+          <div class="pillar-card">
+            <div class="pillar-icon">◎</div>
+            <div class="pillar-title">Adaptive Quizzes</div>
+            <div class="pillar-desc">Per-video knowledge checks unlock after completion. 60% threshold ensures mastery before moving on.</div>
+          </div>
+          <div class="pillar-card">
+            <div class="pillar-icon">⬡</div>
+            <div class="pillar-title">Real-Time Analytics</div>
+            <div class="pillar-desc">Every action tracked via Segment — play events, drop-offs, quiz scores, and session time.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 0 48px 20px;">
+        <div class="section-eyebrow">Course Catalog</div>
+        <div class="section-heading" style="margin-bottom:0">Your Learning Path</div>
+      </div>
+      <div class="home-courses-grid">
+        <div class="home-course-card" onclick="openCourse(1)">
+          <div class="hcc-num">VIDEO 01</div>
+          <div class="hcc-title">Introduction to Twilio Voice</div>
+          <div class="hcc-desc">Learn how Twilio Voice powers phone calls, speech recognition, and carrier interconnections across 180+ countries.</div>
+          <div class="hcc-meta">
+            <div class="hcc-badge">5 Questions</div>
+            <div class="hcc-progress-bar"><div class="hcc-progress-fill" id="hpf1" style="width:0%"></div></div>
+            <div class="hcc-pct" id="hpct1">0%</div>
+          </div>
+        </div>
+        <div class="home-course-card" onclick="openCourse(2)">
+          <div class="hcc-num">VIDEO 02</div>
+          <div class="hcc-title">Twilio Flex for Customer Engagement</div>
+          <div class="hcc-desc">Discover how Twilio Flex enables omnichannel sales and support with high-touch contextual interactions.</div>
+          <div class="hcc-meta">
+            <div class="hcc-badge">5 Questions</div>
+            <div class="hcc-progress-bar"><div class="hcc-progress-fill" id="hpf2" style="width:0%"></div></div>
+            <div class="hcc-pct" id="hpct2">0%</div>
+          </div>
+        </div>
+        <div class="home-course-card" onclick="openCourse(3)">
+          <div class="hcc-num">VIDEO 03</div>
+          <div class="hcc-title">SendGrid Email Marketing</div>
+          <div class="hcc-desc">Explore SendGrid's platform for promotional and automated email campaigns powering 148B+ emails monthly.</div>
+          <div class="hcc-meta">
+            <div class="hcc-badge">5 Questions</div>
+            <div class="hcc-progress-bar"><div class="hcc-progress-fill" id="hpf3" style="width:0%"></div></div>
+            <div class="hcc-pct" id="hpct3">0%</div>
+          </div>
+        </div>
+        <div class="home-course-card" onclick="openCourse(4)">
+          <div class="hcc-num">VIDEO 04</div>
+          <div class="hcc-title">Twilio Video — Real-Time Communications</div>
+          <div class="hcc-desc">Build programmable real-time video into web, iOS, and Android apps using Twilio's APIs and SDKs.</div>
+          <div class="hcc-meta">
+            <div class="hcc-badge">5 Questions</div>
+            <div class="hcc-progress-bar"><div class="hcc-progress-fill" id="hpf4" style="width:0%"></div></div>
+            <div class="hcc-pct" id="hpct4">0%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COURSES VIEW ── -->
+    <div class="view" id="view-courses" style="height:calc(100vh - 140px);">
+      <div class="courses-view-layout" style="height:100%;">
+        <div class="course-video-panel">
+          <div class="activation-banner">
+            <div class="act-dot" id="actDot"></div>
+            <div class="act-label">Status: <strong id="actLabel">Not Activated</strong></div>
+            <div class="act-steps">
+              <div class="act-step done">✓ Login</div>
+              <div class="act-step" id="stepWatch">▶ Watch</div>
+              <div class="act-step" id="stepComplete">⬛ Complete</div>
+              <div class="act-step" id="stepQuiz">◎ Quiz</div>
+            </div>
+          </div>
+
+          <div id="activeVideoSection">
+            <div class="video-info-bar">
+              <div class="video-name" id="activeVideoName">Select a Course</div>
+              <div class="video-badge" id="activeVideoBadge">Not Started</div>
+            </div>
+            <div class="video-player-wrap">
+              <video id="activeVideo" controls>
+                <source id="activeVideoSrc" src="" type="video/mp4">
+              </video>
+            </div>
+            <div class="video-progress-row">
+              <div class="vpbar"><div class="vpfill" id="activeVpFill" style="width:0%"></div></div>
+              <div class="vppct" id="activeVpPct">0%</div>
+            </div>
+            <div class="video-meta-chips">
+              <div class="meta-chip"><div class="chip-dot b" id="chipStart"></div> Started: <span id="chipStartTxt">No</span></div>
+              <div class="meta-chip"><div class="chip-dot" id="chipComp"></div> Completed: <span id="chipCompTxt">No</span></div>
+              <div class="meta-chip"><div class="chip-dot" id="chipReplay"></div> Replays: <span id="chipReplayTxt">0</span></div>
+            </div>
+            <div class="quiz-score-badge" id="activeQuizBadge"></div>
+            <button class="quiz-cta-btn" id="activeQuizBtn" disabled onclick="openQuiz()">
+              🔒 Complete video to unlock quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="course-info-panel">
+          <div class="course-panel-heading">Twilio Mastery Series</div>
+          <div class="course-panel-sub">4 lessons · 20 quiz questions</div>
+          <div class="panel-stat-grid">
+            <div class="panel-stat">
+              <div class="panel-stat-label">Completed</div>
+              <div class="panel-stat-value" id="panelCompleted">0/4</div>
+            </div>
+            <div class="panel-stat">
+              <div class="panel-stat-label">Quiz Best</div>
+              <div class="panel-stat-value" id="panelQuizBest">—</div>
+            </div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Lessons</div>
+          <div class="lesson-list">
+            <div class="lesson-item active" id="li-1" onclick="openCourse(1)">
+              <div class="lesson-num" id="ln-1">1</div>
+              <div class="lesson-title">Introduction to Twilio Voice</div>
+              <div class="lesson-status" id="ls-1">0%</div>
+            </div>
+            <div class="lesson-item" id="li-2" onclick="openCourse(2)">
+              <div class="lesson-num" id="ln-2">2</div>
+              <div class="lesson-title">Twilio Flex</div>
+              <div class="lesson-status" id="ls-2">0%</div>
+            </div>
+            <div class="lesson-item" id="li-3" onclick="openCourse(3)">
+              <div class="lesson-num" id="ln-3">3</div>
+              <div class="lesson-title">SendGrid Email</div>
+              <div class="lesson-status" id="ls-3">0%</div>
+            </div>
+            <div class="lesson-item" id="li-4" onclick="openCourse(4)">
+              <div class="lesson-num" id="ln-4">4</div>
+              <div class="lesson-title">Twilio Video</div>
+              <div class="lesson-status" id="ls-4">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE VIEW ── -->
+    <div class="view" id="view-profile">
+      <div class="profile-view-wrap">
+
+        <!-- Hero card -->
+        <div class="profile-hero-card">
+          <div class="profile-avatar" id="profileAvatar"></div>
+          <div class="profile-hero-info">
+            <div class="profile-hero-name" id="profileHeroName">—</div>
+            <div class="profile-hero-email" id="profileHeroEmail">—</div>
+            <div class="profile-hero-tags">
+              <span class="profile-tag tag-active">● Active Student</span>
+              <span class="profile-tag tag-enrolled" id="profileEnrolledTag">Enrolled</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="profile-stats-row">
+          <div class="profile-stat-card">
+            <div class="profile-stat-val" id="pStatStarted">0</div>
+            <div class="profile-stat-lbl">Videos Started</div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-val" id="pStatCompleted">0</div>
+            <div class="profile-stat-lbl">Videos Completed</div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-val" id="pStatQuizzes">0</div>
+            <div class="profile-stat-lbl">Quizzes Taken</div>
+          </div>
+          <div class="profile-stat-card">
+            <div class="profile-stat-val" id="pStatBestScore">—</div>
+            <div class="profile-stat-lbl">Best Quiz Score</div>
+          </div>
+        </div>
+
+        <!-- Video progress cards -->
+        <div class="profile-section-title">Video Progress & Quiz Scores</div>
+        <div class="profile-video-grid" id="profileVideoGrid"></div>
+
+        <!-- Account details -->
+        <div class="profile-section-title">Account Details</div>
+        <div class="profile-details-grid">
+          <div class="profile-detail-field">
+            <div class="pdf-label">Full Name</div>
+            <div class="pdf-value" id="pdName">—</div>
+          </div>
+          <div class="profile-detail-field">
+            <div class="pdf-label">Email Address</div>
+            <div class="pdf-value" id="pdEmail">—</div>
+          </div>
+          <div class="profile-detail-field">
+            <div class="pdf-label">Activation Status</div>
+            <div class="pdf-value" id="pdStatus">Not Activated</div>
+          </div>
+          <div class="profile-detail-field">
+            <div class="pdf-label">Member Since</div>
+            <div class="pdf-value" id="pdJoined">—</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── QUIZ MODAL ── -->
+<div class="quiz-overlay" id="quizOverlay">
+  <div class="quiz-modal">
+    <div id="quizActiveScreen">
+      <div class="quiz-header">
+        <div>
+          <div class="quiz-title" id="quizModalTitle">Knowledge Check</div>
+          <div class="quiz-sub" id="quizModalSub">5 questions</div>
+        </div>
+        <button class="quiz-close" onclick="closeQuiz()">✕</button>
+      </div>
+      <div class="quiz-prog-wrap">
+        <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="quizProgFill" style="width:0%"></div></div>
+        <div class="quiz-prog-label" id="quizProgLabel">Q 1 / 5</div>
+      </div>
+      <div id="questionArea"></div>
+      <div class="q-feedback" id="qFeedback"></div>
+      <div class="quiz-nav">
+        <button class="qbtn pri" id="quizNextBtn" onclick="nextQuestion()" disabled>Next →</button>
+      </div>
+    </div>
+    <div class="results-screen" id="quizResultsScreen">
+      <div class="res-circle">
+        <svg viewBox="0 0 128 128">
+          <circle cx="64" cy="64" r="56" fill="none" stroke="#162440" stroke-width="8"/>
+          <circle id="resArc" cx="64" cy="64" r="56" fill="none" stroke="#10b981" stroke-width="8"
+                  stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="351.86"
+                  style="transition:stroke-dashoffset 1.1s ease;"/>
+        </svg>
+        <div class="res-inner">
+          <div class="res-num" id="resScoreNum">0/5</div>
+          <div class="res-lbl">SCORE</div>
+        </div>
+      </div>
+      <div class="res-grade" id="resGrade"></div>
+      <div class="res-msg" id="resMsg"></div>
+      <div class="res-breakdown" id="resBreakdown"></div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button class="qbtn sec" onclick="retakeQuiz()">↺ Retake</button>
+        <button class="qbtn pri" onclick="closeQuiz()">✓ Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEGMENT -->
 <script>
-!function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","screen","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware","register"];analytics.factory=function(e){return function(){if(window[i].initialized)return window[i][e].apply(window[i],arguments);var n=Array.prototype.slice.call(arguments);if(["track","screen","alias","group","page","identify"].indexOf(e)>-1){var c=document.querySelector("link[rel='canonical']");n.push({__t:"bpc",c:c&&c.getAttribute("href")||void 0,p:location.pathname,u:location.href,s:location.search,t:document.title,r:document.referrer})}n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){var key=analytics.methods[n];analytics[key]=analytics.factory(key)}analytics.load=function(key,n){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r);analytics._loadOptions=n};analytics._writeKey="YOUR_WRITE_KEY";
-analytics.SNIPPET_VERSION="5.2.0";
-analytics.load("bCIQ3VUibreTA3bCSBKXZNj5gRkUw1O6");
-analytics.page();
-}}();
+!function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["track","page","identify"];analytics.factory=function(e){return function(){var n=Array.prototype.slice.call(arguments);n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){analytics[analytics.methods[n]]=analytics.factory(analytics.methods[n])}analytics.load=function(key){var t=document.createElement("script");t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)};analytics.load("bCIQ3VUibreTA3bCSBKXZNj5gRkUw1O6");analytics.page();}}();
 </script>
 
-<!-- TRACKING + CHART -->
 <script>
+/* ═══════════════════════════════════════════
+   AUTH — Read signup data (name, email, password stored under email key)
+═══════════════════════════════════════════ */
+const currentUserEmail = localStorage.getItem("currentUser"); // email is stored as currentUser
+if (!currentUserEmail) { window.location.href = "login.html"; }
 
-// USER
-analytics.identify("student_1");
+// Pull full user object saved at signup: { name, email, password }
+const storedUserData  = JSON.parse(localStorage.getItem(currentUserEmail) || "{}");
+const currentUserName = storedUserData.name || currentUserEmail.split("@")[0]; // fallback to email prefix
 
-// CHART DATA
-let videoProgress = {
-  "Video 1": 0,
-  "Video 2": 0,
-  "Video 3": 0,
-  "Video 4": 0
+// Populate greeting + sidebar pill
+document.getElementById("greetName").textContent  = currentUserName;
+document.getElementById("pillName").textContent   = currentUserName;
+document.getElementById("pillEmail").textContent  = currentUserEmail;
+
+// Segment identify with full name
+analytics.identify(currentUserEmail, {
+  name:  currentUserName,
+  email: currentUserEmail
+});
+
+function logout() {
+  analytics.track("User Logged Out", { user: currentUserEmail, name: currentUserName });
+  localStorage.removeItem("currentUser");
+  window.location.href = "login.html";
+}
+
+/* ═══════════════════════════════════════════
+   VIDEO CONFIG
+═══════════════════════════════════════════ */
+const VIDEOS = {
+  1: { id:"video1", src:"video1.mp4", name:"Video 1 — Introduction to Twilio Voice",    shortName:"Video 1" },
+  2: { id:"video2", src:"video2.mp4", name:"Video 2 — Twilio Flex",                     shortName:"Video 2" },
+  3: { id:"video3", src:"video3.mp4", name:"Video 3 — SendGrid Email",                  shortName:"Video 3" },
+  4: { id:"video4", src:"video4.mp4", name:"Video 4 — Twilio Video RTC",                shortName:"Video 4" }
 };
 
-let chart;
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const videoProgress  = { video1:0, video2:0, video3:0, video4:0 };
+const videoStarted   = { video1:false, video2:false, video3:false, video4:false };
+const videoCompleted = { video1:false, video2:false, video3:false, video4:false };
+const videoReplay    = { video1:0, video2:0, video3:0, video4:0 };
+const quizPassed     = { video1:false, video2:false, video3:false, video4:false };
+const quizBestScore  = { video1:null, video2:null, video3:null, video4:null };
+const quizAttempts   = { video1:0, video2:0, video3:0, video4:0 };
 
-// CREATE CHART
-function createChart() {
-  chart = new Chart(document.getElementById("myChart"), {
-    type: "bar",
-    data: {
-      labels: Object.keys(videoProgress),
-      datasets: [{
-        label: "Completion %",
-        data: Object.values(videoProgress)
-      }]
-    },
-    options: {
-      scales: {
-        y: { min: 0, max: 100 }
-      }
-    }
+let activeCourseNum  = 1;
+let activeVideoId    = "video1";
+let hasWatched       = false;
+let hasCompleted     = false;
+let activeVideoStart = null;
+let sessionSeconds   = 0;
+
+const milestoneFlags = {};
+["video1","video2","video3","video4"].forEach(v => {
+  milestoneFlags[v] = { t10:false, t40:false, t80:false, completed:false };
+});
+
+/* ═══════════════════════════════════════════
+   SESSION TIME (background only — no KPI display)
+═══════════════════════════════════════════ */
+setInterval(() => {
+  sessionSeconds++;
+  if (sessionSeconds === 120) analytics.track("Session Time Milestone", { user:currentUserEmail, name:currentUserName, minutes:2 });
+  if (sessionSeconds === 300) analytics.track("Session Time Milestone", { user:currentUserEmail, name:currentUserName, minutes:5 });
+  if (sessionSeconds === 600) analytics.track("Session Time Milestone", { user:currentUserEmail, name:currentUserName, minutes:10 });
+  if (sessionSeconds > 0 && sessionSeconds % 300 === 0) {
+    analytics.track("Session Time Update", { user:currentUserEmail, name:currentUserName, total_minutes:Math.floor(sessionSeconds/60) });
+  }
+}, 1000);
+
+window.addEventListener("beforeunload", () => {
+  analytics.track("Session Ended", {
+    user: currentUserEmail, name: currentUserName,
+    total_seconds: sessionSeconds, total_minutes: Math.floor(sessionSeconds/60)
+  });
+});
+
+/* ═══════════════════════════════════════════
+   VIEWS
+═══════════════════════════════════════════ */
+function showView(name) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + name).classList.add("active");
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  if (name === "home" || name === "courses") document.getElementById("nav-home").classList.add("active");
+  if (name === "profile") document.getElementById("nav-profile").classList.add("active");
+
+  // Refresh profile when opened
+  if (name === "profile") renderProfile();
+
+  analytics.track("View Changed", { user:currentUserEmail, name:currentUserName, view:name });
+}
+
+/* ═══════════════════════════════════════════
+   COURSE OPEN
+═══════════════════════════════════════════ */
+function openCourse(num) {
+  activeCourseNum = num;
+  activeVideoId   = "video" + num;
+
+  document.querySelectorAll(".course-item").forEach(c => c.classList.remove("active"));
+  document.getElementById("sc-" + num).classList.add("active");
+  document.querySelectorAll(".lesson-item").forEach(l => l.classList.remove("active"));
+  document.getElementById("li-" + num).classList.add("active");
+
+  showView("courses");
+
+  const vid    = VIDEOS[num];
+  const videoEl = document.getElementById("activeVideo");
+  const srcEl   = document.getElementById("activeVideoSrc");
+
+  videoEl.pause();
+  srcEl.src = vid.src;
+  videoEl.load();
+
+  setupVideoTracking(videoEl, vid.id, vid.name, vid.shortName, num);
+  document.getElementById("activeVideoName").textContent = vid.name;
+  refreshActiveVideoUI();
+
+  analytics.track("Course Opened", {
+    user: currentUserEmail, name: currentUserName,
+    video_number: num, video_id: vid.id, video_name: vid.name
   });
 }
 
-// UPDATE CHART
-function updateChart() {
-  chart.data.datasets[0].data = Object.values(videoProgress);
-  chart.update();
-}
+/* ═══════════════════════════════════════════
+   VIDEO TRACKING
+   — All Segment events include exact video name + number
+═══════════════════════════════════════════ */
+const trackedVideos = new Set();
 
-// TRACK VIDEO
-function trackVideo(videoId, progressId, name) {
-  const video = document.getElementById(videoId);
-  const progress = document.getElementById(progressId);
+function setupVideoTracking(video, videoId, videoName, shortName, videoNum) {
+  // Attach fresh listeners each time (video element is reused)
+  // Use a one-time flag to avoid duplicate events per session
+  if (trackedVideos.has(videoId)) return;
+  trackedVideos.add(videoId);
 
-  let t10=false, t40=false, t80=false;
-  let completed = false;
+  const flags = milestoneFlags[videoId];
 
   video.addEventListener("play", () => {
-    analytics.track("Video Started", { video: name });
+    if (!videoStarted[videoId]) {
+      videoStarted[videoId] = true;
+      hasWatched = true;
+      activeVideoStart = Date.now();
+
+      analytics.track("Video Started", {
+        user: currentUserEmail,
+        name: currentUserName,
+        video_number: videoNum,
+        video_id: videoId,
+        video_name: videoName,
+        video_short_name: shortName
+      });
+    } else {
+      videoReplay[videoId]++;
+      analytics.track("Video Replayed", {
+        user: currentUserEmail, name: currentUserName,
+        video_number: videoNum, video_id: videoId, video_name: videoName,
+        replay_count: videoReplay[videoId]
+      });
+    }
+
+    refreshActiveVideoUI();
+    updateActivation();
+    updateKPI();
   });
 
   video.addEventListener("timeupdate", () => {
     if (!video.duration) return;
+    const pct = (video.currentTime / video.duration) * 100;
+    videoProgress[videoId] = pct;
 
-    let percent = (video.currentTime / video.duration) * 100;
-
-    progress.style.width = percent + "%";
-    videoProgress[name] = Math.round(percent);
-    updateChart();
-
-    if (percent >= 10 && !t10) {
-      t10 = true;
-      analytics.track("Video Watched 10%", { video: name });
+    if (activeVideoId === videoId) {
+      document.getElementById("activeVpFill").style.width = pct + "%";
+      document.getElementById("activeVpPct").textContent  = Math.round(pct) + "%";
+      document.getElementById("ls-" + activeCourseNum).textContent = Math.round(pct) + "%";
+      document.getElementById("hpf" + activeCourseNum).style.width = pct + "%";
+      document.getElementById("hpct" + activeCourseNum).textContent = Math.round(pct) + "%";
     }
 
-    if (percent >= 40 && !t40) {
-      t40 = true;
-      analytics.track("Video Watched 40%", { video: name });
+    updateKPI();
+
+    // Milestones — each includes exact video name
+    if (pct >= 10 && !flags.t10) {
+      flags.t10 = true;
+      analytics.track("Video Progress Milestone", {
+        user: currentUserEmail, name: currentUserName,
+        video_number: videoNum, video_id: videoId, video_name: videoName,
+        milestone: "10%", milestone_label: videoName + " reached 10%"
+      });
+    }
+    if (pct >= 40 && !flags.t40) {
+      flags.t40 = true;
+      analytics.track("Video Progress Milestone", {
+        user: currentUserEmail, name: currentUserName,
+        video_number: videoNum, video_id: videoId, video_name: videoName,
+        milestone: "40%", milestone_label: videoName + " reached 40%"
+      });
+    }
+    if (pct >= 80 && !flags.t80) {
+      flags.t80 = true;
+      analytics.track("Video Progress Milestone", {
+        user: currentUserEmail, name: currentUserName,
+        video_number: videoNum, video_id: videoId, video_name: videoName,
+        milestone: "80%", milestone_label: videoName + " reached 80%"
+      });
     }
 
-    if (percent >= 80 && !t80) {
-      t80 = true;
-      analytics.track("Video Watched 80%", { video: name });
+    if (pct >= 95 && !flags.completed) {
+      markCompleted(video, videoId, videoName, shortName, videoNum, flags);
     }
   });
 
   video.addEventListener("ended", () => {
-    completed = true;
-    videoProgress[name] = 100;
-    analytics.track("Video Completed", { video: name });
-    updateChart();
+    if (!flags.completed) markCompleted(video, videoId, videoName, shortName, videoNum, flags);
   });
 
-  // 🔥 DROP-OFF USING VISIBILITY CHANGE (BEST)
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-
-      if (!video.duration) return;
-
-      let percent = (video.currentTime / video.duration) * 100;
-
-      if (!completed && percent > 0 && percent < 95) {
-        analytics.track("Video Dropped Off", {
-          video: name,
-          percent: Math.round(percent)
-        });
-      }
+  video.addEventListener("pause", () => {
+    if (!video.duration || flags.completed) return;
+    const pct = (video.currentTime / video.duration) * 100;
+    if (pct > 2 && pct < 95) {
+      analytics.track("Video Drop Off", {
+        user: currentUserEmail, name: currentUserName,
+        video_number: videoNum, video_id: videoId, video_name: videoName,
+        percent_watched: Math.round(pct),
+        drop_stage: pct < 40 ? "Early" : pct < 80 ? "Mid" : "Late",
+        drop_label: videoName + " paused at " + Math.round(pct) + "%"
+      });
     }
   });
 
+  window.addEventListener("beforeunload", () => {
+    if (!video.duration || flags.completed) return;
+    const pct = (video.currentTime / video.duration) * 100;
+    if (pct > 0 && pct < 95) {
+      analytics.track("Video Drop Off", {
+        user: currentUserEmail, name: currentUserName,
+        video_number: videoNum, video_id: videoId, video_name: videoName,
+        percent_watched: Math.round(pct), trigger: "page_exit"
+      });
+    }
+  });
 }
 
-// APPLY
-trackVideo("video1", "p1", "Video 1");
-trackVideo("video2", "p2", "Video 2");
-trackVideo("video3", "p3", "Video 3");
-trackVideo("video4", "p4", "Video 4");
+function markCompleted(video, videoId, videoName, shortName, videoNum, flags) {
+  flags.completed = true;
+  videoCompleted[videoId] = true;
+  hasCompleted = true;
 
-// INIT
-createChart();
+  const watchTime = activeVideoStart ? Math.round((Date.now() - activeVideoStart) / 1000) : 0;
 
+  if (activeVideoId === videoId) unlockQuizBtn();
+
+  localStorage.setItem(videoId + "_completed_" + currentUserEmail, "true");
+
+  const numStr = videoNum.toString();
+  const ln = document.getElementById("ln-" + numStr);
+  if (ln) ln.textContent = "✓";
+  document.getElementById("li-" + numStr).classList.add("done");
+  document.getElementById("scDone" + numStr).textContent = "✓";
+
+  updateActivation();
+  updateKPI();
+  refreshActiveVideoUI();
+
+  analytics.track("Video Completed", {
+    user: currentUserEmail, name: currentUserName,
+    video_number: videoNum, video_id: videoId, video_name: videoName,
+    completion_label: videoName + " completed",
+    watch_time_seconds: watchTime,
+    replay_count: videoReplay[videoId]
+  });
+}
+
+function unlockQuizBtn() {
+  const btn = document.getElementById("activeQuizBtn");
+  if (!btn) return;
+  const vid = activeVideoId;
+  if (quizPassed[vid]) {
+    const score = quizBestScore[vid];
+    btn.textContent  = `✓ Quiz Passed — ${score}%`;
+    btn.className    = "quiz-cta-btn passed";
+    btn.disabled     = true;
+  } else {
+    btn.disabled  = false;
+    btn.className = "quiz-cta-btn unlocked";
+    btn.textContent = "▶ Take Quiz";
+  }
+}
+
+function refreshActiveVideoUI() {
+  const vid       = activeVideoId;
+  const numStr    = vid.replace("video","");
+  const started   = videoStarted[vid];
+  const completed = videoCompleted[vid];
+  const replays   = videoReplay[vid];
+  const pct       = Math.round(videoProgress[vid]);
+
+  const badge = document.getElementById("activeVideoBadge");
+  if (completed)    { badge.textContent = "Completed"; badge.className = "video-badge completed"; }
+  else if (started) { badge.textContent = "Watching";  badge.className = "video-badge watching"; }
+  else              { badge.textContent = "Not Started"; badge.className = "video-badge"; }
+
+  document.getElementById("chipStartTxt").textContent  = started   ? "Yes" : "No";
+  document.getElementById("chipCompTxt").textContent   = completed ? "Yes" : "No";
+  document.getElementById("chipReplayTxt").textContent = replays;
+  document.getElementById("chipComp").className = "chip-dot" + (completed ? " g" : "");
+  document.getElementById("activeVpFill").style.width  = pct + "%";
+  document.getElementById("activeVpPct").textContent   = pct + "%";
+
+  const badge2 = document.getElementById("activeQuizBadge");
+  if (quizBestScore[vid] !== null) {
+    const passed = quizPassed[vid];
+    badge2.style.display = "inline-flex";
+    badge2.className = "quiz-score-badge " + (passed ? "pass" : "fail");
+    badge2.textContent = `◎ Quiz: ${quizBestScore[vid]}% ${passed ? "✓ Passed" : "✗ Failed"}`;
+  } else {
+    badge2.style.display = "none";
+  }
+
+  if (completed) unlockQuizBtn();
+  else {
+    const btn = document.getElementById("activeQuizBtn");
+    btn.disabled = true;
+    btn.className = "quiz-cta-btn";
+    btn.textContent = "🔒 Complete video to unlock quiz";
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ACTIVATION
+═══════════════════════════════════════════ */
+function updateActivation() {
+  const dot = document.getElementById("actDot");
+  const lbl = document.getElementById("actLabel");
+  const sw  = document.getElementById("stepWatch");
+  const sc  = document.getElementById("stepComplete");
+  const anyQuizPassed = Object.values(quizPassed).some(Boolean);
+
+  if (hasCompleted && anyQuizPassed) {
+    dot.className = "act-dot full";  lbl.textContent = "Activated";
+    sw.className = "act-step done"; sc.className = "act-step done";
+    document.getElementById("stepQuiz").className = "act-step done";
+  } else if (hasCompleted) {
+    dot.className = "act-dot partial"; lbl.textContent = "Partially Activated";
+    sw.className = "act-step done"; sc.className = "act-step done";
+    document.getElementById("stepQuiz").className = "act-step warn";
+  } else if (hasWatched) {
+    dot.className = "act-dot partial"; lbl.textContent = "Partially Activated";
+    sw.className = "act-step done"; sc.className = "act-step warn";
+    document.getElementById("stepQuiz").className = "act-step";
+  } else {
+    dot.className = "act-dot"; lbl.textContent = "Not Activated";
+    sw.className = "act-step"; sc.className = "act-step";
+    document.getElementById("stepQuiz").className = "act-step";
+  }
+
+  // Also update profile status text
+  const statusEl = document.getElementById("pdStatus");
+  if (statusEl) statusEl.textContent = lbl.textContent;
+}
+
+/* ═══════════════════════════════════════════
+   KPI
+═══════════════════════════════════════════ */
+function updateKPI() {
+  const started   = Object.values(videoStarted).filter(Boolean).length;
+  const completed = Object.values(videoCompleted).filter(Boolean).length;
+  const vals      = Object.values(videoProgress);
+  const avg       = vals.reduce((a,b) => a+b, 0) / vals.length;
+
+  document.getElementById("kpiStarted").textContent  = started;
+  document.getElementById("kpiAvg").textContent      = Math.round(avg) + "%";
+  document.getElementById("panelCompleted").textContent = completed + "/4";
+
+  const scores = Object.values(quizBestScore).filter(s => s !== null);
+  if (scores.length > 0) {
+    const best = Math.max(...scores);
+    document.getElementById("panelQuizBest").textContent = best + "%";
+  }
+
+  // Profile stats
+  document.getElementById("pStatStarted").textContent   = started;
+  document.getElementById("pStatCompleted").textContent = completed;
+  const totalAttempts = Object.values(quizAttempts).reduce((a,b) => a+b, 0);
+  document.getElementById("pStatQuizzes").textContent   = totalAttempts;
+  if (scores.length > 0) {
+    document.getElementById("pStatBestScore").textContent = Math.max(...scores) + "%";
+    document.getElementById("kpiQuizScore").textContent   = Math.max(...scores) + "%";
+  }
+}
+
+/* ═══════════════════════════════════════════
+   PROFILE VIEW RENDER
+═══════════════════════════════════════════ */
+const VIDEO_NAMES_SHORT = {
+  video1: "Video 1 — Introduction",
+  video2: "Video 2 — Twilio Flex",
+  video3: "Video 3 — SendGrid",
+  video4: "Video 4 — RTC"
+};
+const VIDEO_NUM_MAP = { video1:1, video2:2, video3:3, video4:4 };
+
+function getInitials(name) {
+  return name.split(" ").filter(Boolean).map(n => n[0]).join("").slice(0,2).toUpperCase();
+}
+function getAvatarColor(name) {
+  const colors = ["#7c3aed","#0891b2","#059669","#d97706","#dc2626","#0e7490","#065f46","#7c2d12"];
+  let h = 0;
+  for (let c of name) h = (h * 31 + c.charCodeAt(0)) % colors.length;
+  return colors[Math.abs(h)];
+}
+
+function renderProfile() {
+  const color    = getAvatarColor(currentUserName);
+  const initials = getInitials(currentUserName);
+
+  // Avatar
+  const av = document.getElementById("profileAvatar");
+  av.style.background = color;
+  av.textContent = initials;
+
+  document.getElementById("profileHeroName").textContent  = currentUserName;
+  document.getElementById("profileHeroEmail").textContent = currentUserEmail;
+  document.getElementById("pdName").textContent   = currentUserName;
+  document.getElementById("pdEmail").textContent  = currentUserEmail;
+  document.getElementById("pdStatus").textContent = document.getElementById("actLabel").textContent;
+
+  // Joined date (from stored user data or fallback)
+  const joined = storedUserData.created_at
+    ? new Date(storedUserData.created_at).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })
+    : "This session";
+  document.getElementById("pdJoined").textContent = joined;
+  document.getElementById("profileEnrolledTag").textContent = "Enrolled · " + (joined !== "This session" ? joined : "Today");
+
+  // Video progress grid
+  const grid = document.getElementById("profileVideoGrid");
+  grid.innerHTML = "";
+  ["video1","video2","video3","video4"].forEach(vid => {
+    const num       = VIDEO_NUM_MAP[vid];
+    const started   = videoStarted[vid];
+    const completed = videoCompleted[vid];
+    const pct       = Math.round(videoProgress[vid]);
+    const score     = quizBestScore[vid];
+    const passed    = quizPassed[vid];
+
+    let statusClass = "", statusText = "Not Started";
+    if (completed) { statusClass = "done"; statusText = "Completed"; }
+    else if (started) { statusClass = "watching"; statusText = "Watching"; }
+
+    let quizHtml = "";
+    if (score !== null) {
+      quizHtml = `<div class="pvc-quiz-badge ${passed ? 'pass' : 'fail'}">
+        ◎ Quiz: ${score}% ${passed ? '✓ Passed' : '✗ Failed'}
+      </div>`;
+    } else if (completed) {
+      quizHtml = `<div class="pvc-quiz-badge none">◎ Quiz not taken yet</div>`;
+    } else {
+      quizHtml = `<div class="pvc-quiz-badge none">🔒 Complete video to unlock</div>`;
+    }
+
+    grid.innerHTML += `
+      <div class="profile-video-card">
+        <div class="pvc-header">
+          <div>
+            <div class="pvc-num">VIDEO 0${num}</div>
+            <div class="pvc-title">${VIDEO_NAMES_SHORT[vid]}</div>
+          </div>
+          <div class="pvc-status ${statusClass}">${statusText}</div>
+        </div>
+        <div class="pvc-prog-row">
+          <div class="pvc-bar"><div class="pvc-fill" style="width:${pct}%"></div></div>
+          <div class="pvc-pct">${pct}%</div>
+        </div>
+        ${quizHtml}
+      </div>
+    `;
+  });
+
+  updateKPI();
+}
+
+/* ═══════════════════════════════════════════
+   RESTORE STATE FROM LOCALSTORAGE
+═══════════════════════════════════════════ */
+for (let i = 1; i <= 4; i++) {
+  const vid = "video" + i;
+  if (localStorage.getItem(vid + "_completed_" + currentUserEmail) === "true") {
+    videoCompleted[vid] = true;
+    videoStarted[vid]   = true;
+    hasCompleted = true;
+    hasWatched   = true;
+    milestoneFlags[vid].completed = true;
+    document.getElementById("scDone" + i).textContent = "✓";
+    document.getElementById("li-" + i).classList.add("done");
+    const ln = document.getElementById("ln-" + i);
+    if (ln) ln.textContent = "✓";
+  }
+}
+updateActivation();
+updateKPI();
+openCourse(1);
+showView("home");
+
+/* ═══════════════════════════════════════════
+   QUIZ DATA — All 4 videos
+═══════════════════════════════════════════ */
+const QUIZ_DATA = {
+  video1: [
+    { q:"What is Twilio Voice primarily used for?", opts:["Designing hardware devices","Managing databases","Integrating voice experiences into applications","Building operating systems"], ans:2 },
+    { q:'What does the "super network" in Twilio Voice do?', opts:["Creates mobile apps","Manages carrier interconnections efficiently","Stores customer data","Designs AI models"], ans:1 },
+    { q:"Which of the following is a capability of Twilio Voice?", opts:["Video game development","Speech recognition","Graphic design","Blockchain mining"], ans:1 },
+    { q:"How does Twilio Voice help developers?", opts:["By limiting scalability","By providing only hardware tools","By enabling quick prototyping and performance tracking","By replacing programming languages"], ans:2 },
+    { q:"Where can Twilio Voice deliver voice interactions?", opts:["Only within one country","Only in North America","Over 50 countries","Over 180 countries"], ans:3 }
+  ],
+  video2: [
+    { q:"What is Twilio Flex primarily designed for?", opts:["Software testing","Digital engagement for sales and customer support teams","Hardware manufacturing","Data storage"], ans:1 },
+    { q:"What is a key benefit of Twilio Flex for communication?", opts:["Works only with email","Limits communication channels","Enables communication across all channels","Removes customer interaction"], ans:2 },
+    { q:"How does Twilio Flex help drive revenue?", opts:["By reducing customer interactions","By removing friction and encouraging repeat sales","By eliminating sales teams","By focusing only on marketing"], ans:1 },
+    { q:"What type of sales interactions does Twilio Flex support?", opts:["Automated-only sales","High-touch contextual sales interactions","No direct sales","Offline-only sales"], ans:1 },
+    { q:"What feature supports relationship management in Twilio Flex?", opts:["Data backup system","In-app digital concierge","Operating system integration","Cloud storage"], ans:1 }
+  ],
+  video3: [
+    { q:"What is SendGrid Marketing Campaigns mainly used for?", opts:["Building mobile apps","Creating promotional and automated email campaigns","Managing phone calls","Designing websites"], ans:1 },
+    { q:"What is a key benefit of SendGrid according to users?", opts:["Faster internet speed","Improved delivery rates","Lower hardware costs","Better video quality"], ans:1 },
+    { q:"Approximately how many emails does SendGrid power monthly?", opts:["10 million","1 billion","148 billion","500 billion"], ans:2 },
+    { q:"What makes SendGrid easy for marketers to use?", opts:["Complex coding requirements","Limited features","Marketer-friendly and simple interface","Only works with developers"], ans:2 },
+    { q:"What is the main goal of SendGrid when sending emails?", opts:["To reduce email usage","To send emails randomly","To ensure emails reliably reach the inbox","To store emails permanently"], ans:2 }
+  ],
+  video4: [
+    { q:"What is Twilio Video?", opts:["A hardware device for video calls","A programmable real-time communications platform","A social media app","A data analytics tool"], ans:1 },
+    { q:"What functionality does Twilio Video provide to applications?", opts:["File storage","Video call integration","Game development","Payment processing"], ans:1 },
+    { q:"Which platforms can Twilio Video be integrated into?", opts:["Only web applications","Only Android apps","Web, iOS, and Android applications","Desktop-only software"], ans:2 },
+    { q:"What tools does Twilio Video provide for developers?", opts:["Only databases","APIs, SDKs, and helper tools","Operating systems","Hardware chips"], ans:1 },
+    { q:"What can developers do using Twilio Video's tools?", opts:["Only send text messages","Capture, distribute, record, and render high-quality audio and video","Build physical devices","Manage servers manually"], ans:1 }
+  ]
+};
+
+const OPT_LETTERS      = ["A","B","C","D"];
+let currentQuizVideo   = "video1";
+let qCurrent = 0, qAnswers = [], qAnswered = false, qStartTime = null;
+
+function openQuiz() {
+  currentQuizVideo = activeVideoId;
+  if (!videoCompleted[currentQuizVideo]) return;
+
+  quizAttempts[currentQuizVideo]++;
+  qCurrent = 0; qAnswers = []; qAnswered = false; qStartTime = Date.now();
+
+  const vidNum  = VIDEO_NUM_MAP[currentQuizVideo];
+  const vidName = VIDEOS[vidNum].name;
+
+  document.getElementById("quizModalTitle").textContent = vidName + " — Quiz";
+  document.getElementById("quizModalSub").textContent   = "5 questions · attempt #" + quizAttempts[currentQuizVideo];
+  document.getElementById("quizOverlay").classList.add("active");
+  document.getElementById("quizActiveScreen").style.display = "block";
+  document.getElementById("quizResultsScreen").classList.remove("active");
+  renderQ(); updateQProg();
+
+  analytics.track("Quiz Started", {
+    user: currentUserEmail, name: currentUserName,
+    video_id: currentQuizVideo, video_name: vidName,
+    video_number: vidNum,
+    quiz_label: vidName + " Quiz",
+    attempt: quizAttempts[currentQuizVideo]
+  });
+}
+
+function closeQuiz() {
+  document.getElementById("quizOverlay").classList.remove("active");
+  renderProfile(); // refresh profile scores after quiz
+}
+
+function retakeQuiz() { openQuiz(); }
+
+function updateQProg() {
+  const total = QUIZ_DATA[currentQuizVideo].length;
+  document.getElementById("quizProgFill").style.width  = (qCurrent / total * 100) + "%";
+  document.getElementById("quizProgLabel").textContent = `Q ${qCurrent+1} / ${total}`;
+}
+
+function renderQ() {
+  const data  = QUIZ_DATA[currentQuizVideo][qCurrent];
+  const total = QUIZ_DATA[currentQuizVideo].length;
+  document.getElementById("questionArea").innerHTML = `
+    <div class="q-num">Question ${qCurrent+1} of ${total}</div>
+    <div class="q-text">${data.q}</div>
+    ${data.opts.map((o,i) => `
+      <div class="opt" id="opt${i}" onclick="pickOpt(${i})">
+        <div class="opt-letter">${OPT_LETTERS[i]}</div>
+        <div class="opt-text">${o}</div>
+      </div>
+    `).join("")}
+  `;
+  qAnswered = false;
+  const fb = document.getElementById("qFeedback");
+  fb.className = "q-feedback"; fb.textContent = "";
+  const nextBtn = document.getElementById("quizNextBtn");
+  nextBtn.disabled = true;
+  nextBtn.textContent = qCurrent === QUIZ_DATA[currentQuizVideo].length - 1 ? "Submit Quiz ✓" : "Next →";
+}
+
+function pickOpt(idx) {
+  if (qAnswered) return;
+  qAnswered = true;
+  const data      = QUIZ_DATA[currentQuizVideo][qCurrent];
+  const isCorrect = idx === data.ans;
+  qAnswers.push({ selected:idx, correct:data.ans, isCorrect });
+
+  document.querySelectorAll(".opt").forEach((el, i) => {
+    el.style.pointerEvents = "none";
+    if (i === idx && isCorrect)   el.classList.add("correct");
+    if (i === idx && !isCorrect)  el.classList.add("wrong");
+    if (i === data.ans && !isCorrect) el.classList.add("reveal");
+  });
+
+  const fb = document.getElementById("qFeedback");
+  if (isCorrect) { fb.textContent = "✓ Correct!"; fb.className = "q-feedback ok show"; }
+  else { fb.textContent = `✗ Incorrect. Correct answer: ${OPT_LETTERS[data.ans]}. ${data.opts[data.ans]}`; fb.className = "q-feedback err show"; }
+  document.getElementById("quizNextBtn").disabled = false;
+
+  const vidNum  = VIDEO_NUM_MAP[currentQuizVideo];
+  const vidName = VIDEOS[vidNum].name;
+
+  analytics.track("Quiz Question Answered", {
+    user: currentUserEmail, name: currentUserName,
+    video_id: currentQuizVideo, video_name: vidName, video_number: vidNum,
+    quiz_label: vidName + " Quiz",
+    attempt: quizAttempts[currentQuizVideo],
+    question_num: qCurrent + 1,
+    question_text: data.q,
+    selected_option: OPT_LETTERS[idx],
+    correct_option: OPT_LETTERS[data.ans],
+    is_correct: isCorrect
+  });
+}
+
+function nextQuestion() {
+  qCurrent++;
+  if (qCurrent >= QUIZ_DATA[currentQuizVideo].length) showQuizResults();
+  else { renderQ(); updateQProg(); }
+}
+
+function showQuizResults() {
+  const timeSec = Math.round((Date.now() - qStartTime) / 1000);
+  const correct = qAnswers.filter(a => a.isCorrect).length;
+  const total   = QUIZ_DATA[currentQuizVideo].length;
+  const pct     = Math.round((correct / total) * 100);
+  const passed  = pct >= 60;
+
+  const vidNum  = VIDEO_NUM_MAP[currentQuizVideo];
+  const vidName = VIDEOS[vidNum].name;
+
+  document.getElementById("quizActiveScreen").style.display = "none";
+  document.getElementById("quizResultsScreen").classList.add("active");
+  document.getElementById("quizProgFill").style.width  = "100%";
+  document.getElementById("quizProgLabel").textContent = "Complete";
+
+  const arc = document.getElementById("resArc");
+  arc.style.stroke = passed ? "#10b981" : "#ef4444";
+  setTimeout(() => { arc.style.strokeDashoffset = 351.86 - (pct / 100) * 351.86; }, 60);
+
+  document.getElementById("resScoreNum").textContent = `${correct}/${total}`;
+
+  let grade, msg;
+  if (pct === 100)   { grade = "🏆 Perfect!";    msg = "Flawless! You got every question right."; }
+  else if (pct >= 80){ grade = "⭐ Excellent";    msg = "Great work — strong command of the material."; }
+  else if (pct >= 60){ grade = "✓ Passed";        msg = "You passed! Review wrong answers to strengthen knowledge."; }
+  else if (pct >= 40){ grade = "↺ Almost There";  msg = "Close — re-watch the video and try again."; }
+  else               { grade = "✗ Needs Review";  msg = "Please watch the video again carefully, then retake."; }
+
+  document.getElementById("resGrade").textContent    = grade;
+  document.getElementById("resGrade").style.color    = passed ? "var(--success)" : "var(--danger)";
+  document.getElementById("resMsg").textContent      = msg;
+  document.getElementById("resBreakdown").innerHTML  =
+    `<div class="res-bd-title">Question Breakdown</div>` +
+    qAnswers.map((a, i) => `
+      <div class="res-bd-row">
+        <div class="res-bd-q">Q${i+1}. ${QUIZ_DATA[currentQuizVideo][i].q.slice(0,60)}…</div>
+        <div class="res-bd-ans ${a.isCorrect ? 'c' : 'w'}">
+          ${a.isCorrect ? `✓ ${OPT_LETTERS[a.selected]}` : `✗ ${OPT_LETTERS[a.selected]} → ${OPT_LETTERS[a.correct]}`}
+        </div>
+      </div>
+    `).join("");
+
+  // Update best score
+  if (quizBestScore[currentQuizVideo] === null || pct > quizBestScore[currentQuizVideo]) {
+    quizBestScore[currentQuizVideo] = pct;
+  }
+  if (passed) quizPassed[currentQuizVideo] = true;
+
+  // Update panel badge
+  const badge = document.getElementById("activeQuizBadge");
+  badge.style.display = "inline-flex";
+  badge.className = "quiz-score-badge " + (passed ? "pass" : "fail");
+  badge.textContent = `◎ Quiz: ${correct}/${total} (${pct}%) ${passed ? "✓ Passed" : "✗ Failed"}`;
+
+  // Update CTA button
+  const btn = document.getElementById("activeQuizBtn");
+  if (passed) {
+    btn.textContent = `✓ Quiz Passed — ${pct}%`;
+    btn.className   = "quiz-cta-btn passed";
+    btn.disabled    = true;
+    document.getElementById("stepQuiz").className = "act-step done";
+  } else {
+    btn.textContent = `↺ Retake Quiz (${pct}% — need 60%)`;
+    btn.className   = "quiz-cta-btn unlocked";
+    btn.disabled    = false;
+  }
+
+  document.getElementById("kpiQuizScore").textContent = `${correct}/${total}`;
+  updateActivation();
+  updateKPI();
+
+  // ── Segment: Quiz Completed with full video details ──
+  analytics.track("Quiz Completed", {
+    user: currentUserEmail,
+    name: currentUserName,
+    video_id: currentQuizVideo,
+    video_name: vidName,
+    video_number: vidNum,
+    quiz_label: vidName + " Quiz",
+    attempt_number: quizAttempts[currentQuizVideo],
+    score: correct,
+    total_questions: total,
+    percentage: pct,
+    passed: passed,
+    pass_threshold_pct: 60,
+    time_taken_seconds: timeSec,
+    grade: grade.replace(/[^\w\s]/gi,"").trim()
+  });
+
+  // Segment identify — update user traits with quiz result
+  analytics.identify(currentUserEmail, {
+    name: currentUserName,
+    email: currentUserEmail,
+    [`quiz_${currentQuizVideo}_latest_pct`]:  pct,
+    [`quiz_${currentQuizVideo}_latest_score`]: `${correct}/${total}`,
+    [`quiz_${currentQuizVideo}_passed`]:       passed,
+    [`quiz_${currentQuizVideo}_attempts`]:     quizAttempts[currentQuizVideo],
+    [`quiz_${currentQuizVideo}_label`]:        vidName + " Quiz",
+    last_quiz_video:  vidName,
+    last_quiz_passed: passed,
+    last_quiz_at:     new Date().toISOString()
+  });
+}
 </script>
-
 </body>
 </html>
