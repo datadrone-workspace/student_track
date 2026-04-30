@@ -1,84 +1,247 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
+  <title>EduTrack — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #060d1a;
+      --surface: #0b1628;
+      --border: #1a2d4a;
+      --accent: #00e5a0;
+      --accent2: #0066ff;
+      --text: #e2eeff;
+      --muted: #4a6080;
+      --mono: 'DM Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: Arial;
-      background: linear-gradient(135deg, #3b82f6, #9333ea);
+      min-height: 100vh;
+      background: var(--bg);
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      position: relative;
+      overflow: hidden;
     }
 
-    .box {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      width: 300px;
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.3;
     }
 
-    input, button {
+    /* Glow */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,102,255,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 360px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-top {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-bottom: 6px;
+    }
+
+    .field input {
       width: 100%;
-      margin-top: 10px;
-      padding: 10px;
+      background: #060d1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
     }
 
-    button {
-      background: #22c55e;
+    .field input:focus {
+      border-color: var(--accent2);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
       border: none;
-      color: black;
+      border-radius: 8px;
+      color: #060d1a;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: -0.3px;
+    }
+
+    .btn:hover { opacity: 0.92; }
+    .btn:active { transform: scale(0.99); }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--accent2);
+      text-decoration: none;
+    }
+
+    .error-msg {
+      display: none;
+      font-size: 12px;
+      color: #f87171;
+      font-family: var(--mono);
+      margin-top: 12px;
+      padding: 10px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
 
-<div class="box">
-  <h2>Login</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-  <p>No account? <a href="signup.html">Signup</a></p>
+<div class="card">
+  <div class="card-top">
+    <div class="logo">⬡ EduTrack</div>
+    <div class="subtitle">Sign in to your learning account</div>
+  </div>
+
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="you@example.com">
+  </div>
+
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
+  </div>
+
+  <button class="btn" onclick="login()">Sign In →</button>
+
+  <div class="error-msg" id="errorMsg">Invalid email or password. Try again.</div>
+
+  <div class="footer">No account? <a href="signup.html">Create one</a></div>
 </div>
 
+<!-- SEGMENT -->
 <script>
+!function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["track","page","identify"];analytics.factory=function(e){return function(){var n=Array.prototype.slice.call(arguments);n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){analytics[analytics.methods[n]]=analytics.factory(analytics.methods[n])}analytics.load=function(key){var t=document.createElement("script");t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)};analytics.load("bCIQ3VUibreTA3bCSBKXZNj5gRkUw1O6");analytics.page();}}();
+</script>
 
+<script>
+// Track login page view
+window.addEventListener("load", () => {
+  analytics.track("Login Page Viewed");
+});
 
-    // Segment tracking
-    
 function login() {
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const errMsg   = document.getElementById("errorMsg");
 
-  let storedUser = JSON.parse(localStorage.getItem(email));
+  if (!email || !password) {
+    errMsg.textContent = "Please enter both email and password.";
+    errMsg.style.display = "block";
+    return;
+  }
+
+  const storedUser = JSON.parse(localStorage.getItem(email));
 
   if (storedUser && storedUser.password === password) {
 
-    // Save current user
+    // Save session
     localStorage.setItem("currentUser", email);
 
-    // 🔥 IDENTIFY USER IN SEGMENT
-    if (window.analytics) {
-      analytics.identify(email, {
-        name: storedUser.name,
-        email: storedUser.email
-      });
+    // Track login attempt success
+    const loginCount = (parseInt(localStorage.getItem(`loginCount_${email}`)) || 0) + 1;
+    localStorage.setItem(`loginCount_${email}`, loginCount);
 
-      // 🔥 TRACK LOGIN EVENT
-      analytics.track("User Logged In", {
-        email: storedUser.email
-      });
-    }
+    // Segment IDENTIFY with rich traits
+    analytics.identify(email, {
+      email: storedUser.email,
+      name: storedUser.name,
+      login_count: loginCount,
+      last_login: new Date().toISOString()
+    });
 
-    // Redirect to dashboard
+    // Segment TRACK login event
+    analytics.track("User Logged In", {
+      user: email,
+      name: storedUser.name,
+      login_count: loginCount,
+      timestamp: new Date().toISOString(),
+      activation_step: "login_complete"
+    });
+
     window.location.href = "index.html";
 
   } else {
-    alert("Invalid credentials");
+    errMsg.style.display = "block";
+
+    analytics.track("Login Failed", {
+      email: email,
+      reason: storedUser ? "wrong_password" : "user_not_found"
+    });
   }
 }
-
 </script>
 
 </body>
