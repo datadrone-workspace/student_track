@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EduTrack — Signup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060d1a;
+      --surface: #0b1628;
+      --border: #1a2d4a;
+      --accent: #00e5a0;
+      --accent2: #0066ff;
+      --text: #e2eeff;
+      --muted: #4a6080;
+      --mono: 'DM Mono', monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.3;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 360px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-top {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-bottom: 6px;
+    }
+
+    .field input {
+      width: 100%;
+      background: #060d1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #060d1a;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.92; }
+    .btn:active { transform: scale(0.99); }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .footer a { color: var(--accent2); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-top">
+    <div class="logo">⬡ EduTrack</div>
+    <div class="subtitle">Create your account</div>
+  </div>
+
+  <div class="field">
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Your name">
+  </div>
+
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="email" placeholder="you@example.com">
+  </div>
+
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••">
+  </div>
+
+  <button class="btn" onclick="signup()">Create Account →</button>
+
+  <div class="footer">Already have an account? <a href="login.html">Sign in</a></div>
+</div>
+
+<!-- SEGMENT -->
+<script>
+!function(){var i="analytics",analytics=window[i]=window[i]||[];if(!analytics.initialize)if(analytics.invoked)console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["track","page","identify"];analytics.factory=function(e){return function(){var n=Array.prototype.slice.call(arguments);n.unshift(e);analytics.push(n);return analytics}};for(var n=0;n<analytics.methods.length;n++){analytics[analytics.methods[n]]=analytics.factory(analytics.methods[n])}analytics.load=function(key){var t=document.createElement("script");t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/"+key+"/analytics.min.js";var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)};analytics.load("bCIQ3VUibreTA3bCSBKXZNj5gRkUw1O6");analytics.page();}}();
+</script>
+
+<script>
+analytics.track("Signup Page Viewed");
+
+function signup() {
+  const name     = document.getElementById("name").value.trim();
+  const email    = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!name || !email || !password) {
+    alert("Please fill all fields.");
+    return;
+  }
+
+  const user = { name, email, password, created_at: new Date().toISOString() };
+  localStorage.setItem(email, JSON.stringify(user));
+  localStorage.setItem(`loginCount_${email}`, "0");
+
+  // IDENTIFY new user in Segment
+  analytics.identify(email, {
+    name: name,
+    email: email,
+    created_at: user.created_at,
+    login_count: 0,
+    activation_status: "Not Activated"
+  });
+
+  // TRACK signup event (not yet activated — just signed up)
+  analytics.track("User Signed Up", {
+    user: email,
+    name: name,
+    activation_status: "Not Activated",
+    activation_step: "signup_complete",
+    timestamp: user.created_at
+  });
+
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
